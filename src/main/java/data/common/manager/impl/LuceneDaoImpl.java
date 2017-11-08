@@ -1,0 +1,173 @@
+package data.common.manager.impl;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.core.KeywordAnalyzer;
+import org.apache.lucene.analysis.core.StopAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Version;
+
+import data.common.manager.LuceneDao;
+import data.lucene.entity.LuceneNode;
+import data.lucene.pojo.LuceneSerachPOJO;
+
+/**
+ *对lucene  索引操作
+ * @author hutao
+ *
+ */
+public class LuceneDaoImpl implements LuceneDao {
+	
+	static String indexPath="E:/lucene/index04";
+	
+	private String searchFiled="serach";
+	
+	private Integer ONE=1;
+	
+	/**
+	 * 初始化写入
+	 * @return
+	 * @throws Exception
+	 */
+	private static IndexWriter  getWriter() throws Exception{
+    	Directory directory = FSDirectory.open(new File(indexPath));  
+        Analyzer analyzer = new StandardAnalyzer();  
+        IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_4_10_4,analyzer);  
+        conf.setOpenMode(OpenMode.CREATE_OR_APPEND);  
+        conf.setMaxBufferedDocs(100); 
+		return new IndexWriter(directory, conf);
+	}
+	
+	/**
+	 * 初始化读取
+	 * @return
+	 * @throws Exception
+	 */
+	public IndexSearcher getSearcher() throws Exception { 
+    	Directory directory = FSDirectory.open(new File(indexPath));
+        IndexReader reader = DirectoryReader.open(directory);  
+        IndexSearcher searcher = new IndexSearcher(reader); 
+        return searcher;  
+    }
+	
+	/**
+	 * 分页
+	 * @param pageIndex 页码
+	 * @param pageSize  每页条数
+	 * @param query    query
+	 * @param searcher 查询字段
+	 * @return  上一页最后一个结果
+	 * @throws Exception  异常
+	 */
+    private ScoreDoc getLastScoreDoc(int pageIndex,int pageSize,Query query,IndexSearcher searcher) throws Exception {
+        if(pageIndex==1)return null;//如果是第一页就返回空
+        int num = pageSize*(pageIndex-1);//获取上一页的数量
+        TopDocs tds = searcher.search(query, num);
+        return tds.scoreDocs[num-1];
+    }
+
+	@Override
+	public void save(LuceneNode luceneNode) throws Exception {
+		IndexWriter indexWriter=getWriter();
+    	Document document=new Document();
+    	//反射
+    	 Class luClass = luceneNode.getClass();
+    	 java.lang.reflect.Field[] fields = luClass.getDeclaredFields();
+		 for (int i = 0; i < fields.length; i++) {
+			 java.lang.reflect.Field f = fields[i];
+			 f.setAccessible(true);
+			 document.add(new StringField(f.getName(),f.get(luceneNode)==null?"":f.get(luceneNode).toString(),Field.Store.YES));
+		 }
+    	indexWriter.addDocument(document);
+    	indexWriter.close();
+	}
+
+	@Override
+	public void update(LuceneNode luceneNode, String tableId, String tableName) {
+		
+	}
+
+	@Override
+	public void delted(String tableId, String tableName) {
+		
+	}
+
+	@Override
+	public List<LuceneSerachPOJO> find(Integer pageIndex,Integer pageSize,String search) throws Exception {
+		
+		if (search!=null) {
+			IndexSearcher searcher = getSearcher();
+			QueryParser parser = new QueryParser(searchFiled,new KeywordAnalyzer());
+			parser.setAllowLeadingWildcard(true);
+			Query query=parser.parse(search);
+			//先获取上一页的最后一个元素
+			ScoreDoc lastSd = getLastScoreDoc(pageIndex,pageSize,query,searcher);
+			//通过最后一个元素搜索下页的pageSize个元素
+			TopDocs tds = searcher.searchAfter(lastSd,query,pageSize);
+			List<LuceneSerachPOJO> pojos=new ArrayList<>();
+			for (ScoreDoc sd:tds.scoreDocs) {
+				Document doc = searcher.doc(sd.doc);
+				//反射
+				pojos.add(documentToPojo(doc));
+			}
+			return pojos;
+		}
+		return new ArrayList<>();
+	}
+
+	@Override
+	public LuceneSerachPOJO get(String[] fields,String[] content) throws Exception{	
+		
+		//字段数必须与内容数相等
+		if (fields!=null&&content!=null&&fields.length==fields.length) {
+			IndexSearcher searcher=getSearcher();
+			BooleanQuery booleanQuery=new BooleanQuery();
+			for (int i = 0; i < fields.length; i++) {
+				QueryParser parser=new QueryParser(fields[i], new KeywordAnalyzer());
+				parser.setAllowLeadingWildcard(true);
+				Query query=parser.parse(content[i]);
+				booleanQuery.add(query, Occur.MUST);
+			}
+			TopDocs tds = searcher.search(booleanQuery, 2);
+ 			for (ScoreDoc sd:tds.scoreDocs) {
+				Document doc = searcher.doc(sd.doc);
+				//反射
+				return documentToPojo(doc);
+			}
+		}
+		return new LuceneSerachPOJO();
+	}
+	
+	private LuceneSerachPOJO documentToPojo(Document doc) throws Exception{
+		LuceneSerachPOJO pojo=new LuceneSerachPOJO();
+		Class luClass = pojo.getClass();
+		java.lang.reflect.Field[] fields = luClass.getDeclaredFields();
+		for (int i = 0; i < fields.length; i++) {
+			java.lang.reflect.Field f = fields[i];
+			f.setAccessible(true);
+			f.set(pojo, doc.get(f.getName()));
+		}
+		return pojo;
+	}
+}

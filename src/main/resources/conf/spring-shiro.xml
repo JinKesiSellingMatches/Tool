@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+	
+	<bean id="ShiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<property name="securityManager" ref="yisideSecurityManager" />
+		<property name="loginUrl" value="/login.action" />
+		<property name="unauthorizedUrl" value="/html/login.html" />
+		<!-- 自定义filter配置 -->
+		<property name="filters">
+			<map>
+				<!-- 将自定义 的FormAuthenticationFilter注入shiroFilter中-->
+				<entry key="authcYiside" value-ref="ToolDemoFormAuthenticationFilter" />
+				<entry key="logoutYiside" value-ref="ToolDemoLogoutFilter" />
+				<!-- <entry key="OAuthUrl" value-ref="OAuthFilter" /> -->
+			</map>
+		</property>
+		<property name="filterChainDefinitions">
+			<value>
+				/** = anon
+			</value>
+		</property>
+	</bean>
+	<bean id="yisideSecurityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="realm" ref="toolDemoRealm" />
+		<!-- 注入缓存管理器 -->
+	<!-- 	<property name="cacheManager" ref="shiroCacheManager"/> -->
+	</bean>
+	<bean id="toolDemoRealm" class=" data.filter.shiro.realm.ToolDemoRealm">
+	    <!--密码验证方式-->
+        <property name="credentialsMatcher">
+            <bean class="data.filter.shiro.security.CustomCredentialsMatcher">
+            </bean>
+        </property>
+	</bean>
+	
+	<!-- 覆盖默认配置，即表单中的用户账号、密码及loginUrl-->
+	<bean id="ToolDemoFormAuthenticationFilter" class="data.filter.shiro.filter.ToolDemoFormAuthenticationFilter">
+		<!-- 前台用户名对应的input框名称 -->
+		<property name="usernameParam" value="userCode" />
+		<!-- 前台密码对应的input框名称 -->
+		<property name="passwordParam" value="userPassword" />
+	</bean>
+	
+	<!-- 退出登录过滤器-->
+	<bean id="ToolDemoLogoutFilter" class="data.filter.shiro.filter.ToolDemoLogoutFilter">
+		<property name="redirectUrl" value="/jsp/ecm/login.jsp" />
+	</bean>
+ 	<!-- 第三方接口过滤器-->
+	<!-- <bean id="OAuthFilter" class="com.fwzx.yiside.common.shiro.filter.OAuthAdviceFilter"/>
+	缓存管理器
+	<bean id="shiroCacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+    	<property name="cacheManagerConfigFile" value="classpath:conf/ehcache.xml"/>
+    </bean> -->
+	
+</beans>
