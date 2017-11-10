@@ -18,7 +18,7 @@ public class RocketEQContent {
 	/**
 	 * 目标对象
 	 */
-	private String classEntity;
+	private String className;
 	
 	/**
 	 * 发起时间
@@ -33,20 +33,20 @@ public class RocketEQContent {
 		this.id = id;
 	}
 
-	public String getClassEntity() {
-		return classEntity;
-	}
-
-	public void setClassEntity(String classEntity) {
-		this.classEntity = classEntity;
-	}
-
 	public long getTime() {
 		return time;
 	}
 
 	public void setTime(long time) {
 		this.time = time;
+	}
+
+	public String getClassName() {
+		return className;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
 	}
 
 }

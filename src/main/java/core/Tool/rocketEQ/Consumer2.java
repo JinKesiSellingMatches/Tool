@@ -22,46 +22,67 @@ import java.util.List;
 /**
  * RocketMq消费组信息我们都会再正式提交代码前告知选手
  */
-public class Consumer2 {
+public class Consumer2 implements Runnable {
 
-    public static void main(String[] args) throws InterruptedException, MQClientException {
-        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("Lucene");
+	@Override
+	public void run() {
+		
+		
+		DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("Lucene");
+		
+		/**
+		 * 设置Consumer第一次启动是从队列头部开始消费还是队列尾部开始消费<br>
+		 * 如果非第一次启动，那么按照上次消费的位置继续消费
+		 */
+		consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
+		
+		//在本地搭建好broker后,记得指定nameServer的地址
+		consumer.setNamesrvAddr("127.0.0.1:9876");
+		
+		
+		try {
+			consumer.subscribe("default", "*");
+		} catch (MQClientException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		consumer.registerMessageListener(new MessageListenerConcurrently() {
+			
+			@Override
+			public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs,
+					ConsumeConcurrentlyContext context) {
+				 try {
+						Thread.sleep(10000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				for (MessageExt msg : msgs) {
+					
+					byte [] body = msg.getBody();
+					if (body.length == 2 && body[0] == 0 && body[1] == 0) {
+						//Info: 生产者停止生成数据, 并不意味着马上结束
+						System.out.println("Got the end signal");
+						continue;
+					}
+					
+					RocketEQContent rocketEQContent = RaceUtils.readKryoObject(RocketEQContent.class, body);
+					System.out.println(rocketEQContent.getId());
+				 
+				}
+				return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+			}
+		});
+		
+		try {
+			consumer.start();
+		} catch (MQClientException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		System.out.println("Consumer Started.");
 
-        /**
-         * 设置Consumer第一次启动是从队列头部开始消费还是队列尾部开始消费<br>
-         * 如果非第一次启动，那么按照上次消费的位置继续消费
-         */
-        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
-
-        //在本地搭建好broker后,记得指定nameServer的地址
-        consumer.setNamesrvAddr("127.0.0.1:9876");
-        
-
-        consumer.subscribe("default", "*");
-
-        consumer.registerMessageListener(new MessageListenerConcurrently() {
-
-            @Override
-            public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs,
-                                                            ConsumeConcurrentlyContext context) {
-                for (MessageExt msg : msgs) {
-
-                    byte [] body = msg.getBody();
-                    if (body.length == 2 && body[0] == 0 && body[1] == 0) {
-                        //Info: 生产者停止生成数据, 并不意味着马上结束
-                        System.out.println("Got the end signal");
-                        continue;
-                    }
-
-                    RocketEQContent rocketEQContent = RaceUtils.readKryoObject(RocketEQContent.class, body);
-                    System.out.println(rocketEQContent.getClassEntity());
-                }
-                return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
-            }
-        });
-
-        consumer.start();
-
-        System.out.println("Consumer Started.");
-    }
+	}
 }

@@ -32,6 +32,8 @@
 	<!-- rocketMQ -->
 	<context:component-scan base-package="core.Tool.rocketEQ" />
 	
+	<!-- rocketMQ -->
+	<context:component-scan base-package="data.task" />
 	
 	<!--通知spring使用cglib而不是jdk的来生成代理方法 AOP可以拦截到Controller-->  
 	<aop:aspectj-autoproxy proxy-target-class="true"/>

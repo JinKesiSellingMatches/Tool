@@ -82,7 +82,7 @@ public class OperListener implements PostInsertEventListener,PostUpdateEventList
 			String clasz=object.getClass().toString();
 			eqContent.setId(id);
 			eqContent.setTime(System.currentTimeMillis());
-			eqContent.setClassEntity(clasz);
+			eqContent.setClassName(clasz);
 		}
 		return eqContent;
 	}

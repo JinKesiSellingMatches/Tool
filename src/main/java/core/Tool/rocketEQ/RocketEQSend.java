@@ -14,20 +14,20 @@ import core.utils.RaceUtils;
 import data.lucene.entity.LuceneNode;
 
 
-public class RocketEQSend {
+public class RocketEQSend{
 	
-	public static void main(String[] args) throws Exception {
-		
-		RocketEQContent node=new RocketEQContent();
-		node.setClassEntity("demo");
-		
-		RocketEQSend rocketEQ=new RocketEQSend();
-		rocketEQ.sendRocket(node);
-	}
-	
+//	public static void main(String[] args) throws Exception {
+//		
+//		RocketEQContent node=new RocketEQContent();
+//		node.setClassEntity("demo");
+//		
+//		RocketEQSend rocketEQ=new RocketEQSend();
+//		rocketEQ.sendRocket(node);
+//	}
 	
 	//发送数据
 	public void sendRocket(RocketEQContent rocketEQContent) throws MQClientException, RemotingException, InterruptedException{
+		
 		
 		DefaultMQProducer producer=new DefaultMQProducer("Lucene");
 		
@@ -53,4 +53,6 @@ public class RocketEQSend {
 		});
 		producer.shutdown();
 	}
+
+
 }

@@ -1,6 +1,5 @@
 package data.lucene.entity;
 
-import java.util.Date;
 
 public class LuceneNode{
 	
@@ -17,7 +16,7 @@ public class LuceneNode{
     /**
      * 创建时间
      */
-    private Date createDate;
+    private long createDate;
 
     /**
      * 最后修改人信息实体
@@ -27,22 +26,12 @@ public class LuceneNode{
     /**
      * 最后修改时间
      */
-    private Date lastModifyDate;
+    private long lastModifyDate;
 	
 	/**
 	 * 这里保存的是数据库直接的ID
 	 */
     private String tableId;
-    
-    /**
-     * 表名
-     */
-    private String tableName;
-    
-    /**
-     *对应的entity  (必须带有包名)
-     */
-    private String tableNameEntity;
     
     /**
      * 搜索
@@ -52,7 +41,17 @@ public class LuceneNode{
     /**
      *所属模块                                                             
      */
-    private String module;
+    private String moduleCode;
+    
+    /**
+     * 标题
+     */
+    private String title;
+    
+    /**
+     * 内容
+     */
+    private String content;
 
 	public String getTableId() {
 		return tableId;
@@ -62,21 +61,6 @@ public class LuceneNode{
 		this.tableId = tableId;
 	}
 
-	public String getTableName() {
-		return tableName;
-	}
-
-	public void setTableName(String tableName) {
-		this.tableName = tableName;
-	}
-
-	public String getTableNameEntity() {
-		return tableNameEntity;
-	}
-
-	public void setTableNameEntity(String tableNameEntity) {
-		this.tableNameEntity = tableNameEntity;
-	}
 
 	public String getSerach() {
 		return serach;
@@ -84,14 +68,6 @@ public class LuceneNode{
 
 	public void setSerach(String serach) {
 		this.serach = serach;
-	}
-
-	public String getModule() {
-		return module;
-	}
-
-	public void setModule(String module) {
-		this.module = module;
 	}
 
 	public String getId() {
@@ -110,13 +86,6 @@ public class LuceneNode{
 		this.createUser = createUser;
 	}
 
-	public Date getCreateDate() {
-		return createDate;
-	}
-
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
-	}
 
 	public String getLastModifyUser() {
 		return lastModifyUser;
@@ -126,12 +95,45 @@ public class LuceneNode{
 		this.lastModifyUser = lastModifyUser;
 	}
 
-	public Date getLastModifyDate() {
+	public long getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(long createDate) {
+		this.createDate = createDate;
+	}
+
+	public long getLastModifyDate() {
 		return lastModifyDate;
 	}
 
-	public void setLastModifyDate(Date lastModifyDate) {
+	public void setLastModifyDate(long lastModifyDate) {
 		this.lastModifyDate = lastModifyDate;
 	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public String getModuleCode() {
+		return moduleCode;
+	}
+
+	public void setModuleCode(String moduleCode) {
+		this.moduleCode = moduleCode;
+	}
+
 
 }

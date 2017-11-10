@@ -11,13 +11,12 @@ import com.alibaba.rocketmq.common.message.MessageExt;
 import core.Tool.rocketEQ.POJO.RocketEQContent;
 import core.utils.RaceUtils;
 import data.lucene.entity.LuceneNode;
-import data.module.manager.DataBaseModuleManger;
 
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 
+import org.bouncycastle.jce.provider.symmetric.AES.OFB;
 import org.springframework.stereotype.Component;
 
 
@@ -28,16 +27,19 @@ import org.springframework.stereotype.Component;
 /**
  * RocketMq消费组信息我们都会再正式提交代码前告知选手
  */
-@Component
-public class Consumer {
-	
-	@Resource
-	private DataBaseModuleManger dataBaseModuleManger;
 
-	@PostConstruct
+public class Consumer3 {
+	
+	static DefaultMQPushConsumer consumer =null;
+	
+	public Consumer3(){
+		if (consumer==null) {
+			consumer=new DefaultMQPushConsumer("Lucene");
+		}
+	};
+
     public void MesConsumer() throws MQClientException{
-		
-    	DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("Lucene");
+    	
         /**
          * 设置Consumer第一次启动是从队列头部开始消费还是队列尾部开始消费<br>
          * 如果非第一次启动，那么按照上次消费的位置继续消费
@@ -49,8 +51,6 @@ public class Consumer {
 
         consumer.subscribe("default", "*");
 
-        consumer.setConsumeMessageBatchMaxSize(10);
-
         consumer.registerMessageListener(new MessageListenerConcurrently() {
 
             @Override
@@ -59,20 +59,10 @@ public class Consumer {
                 for (MessageExt msg : msgs) {
 
                     byte [] body = msg.getBody();
-                    if (body.length == 2 && body[0] == 0 && body[1] == 0) {
-                        //Info: 生产者停止生成数据, 并不意味着马上结束
-                        System.err.println("Got the end signal");
-                        continue;
-                    }
 
                     RocketEQContent rocketEQContent = RaceUtils.readKryoObject(RocketEQContent.class, body);
-                    //向Lucene服务 发送数据
-                    try {
-                    	dataBaseModuleManger.sendLucene(rocketEQContent);
-					} catch (Exception e) {
-						System.out.println(e);
-					}
-                    
+                    //System.out.println(rocketEQContent.getClassEntity());
+                    System.out.println(rocketEQContent.getId());
                 }
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             }

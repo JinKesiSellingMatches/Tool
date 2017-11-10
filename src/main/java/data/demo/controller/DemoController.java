@@ -23,11 +23,20 @@ public class DemoController {
 	@RequestMapping("/save")
 	@ResponseBody
 	public void save(){
-		Demo demo=new Demo();
-		demo.setCreateDate(new Date());
-		demo.setDeleted(0);
-		demo.setName("hello word!");
-		demoManager.save(demo);
+		try {
+			Demo demo=new Demo();
+			demo.setCreateDate(new Date());
+			demo.setDeleted(0);
+			demo.setContent("Conetent");
+			demo.setContent1("Conetent1");
+			demo.setTitle1("title1");
+			demo.setTitle2("title2");
+			demo.setName("hello word!");
+			demoManager.save(demo);
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+			
 	}
 	
 	@RequestMapping("/update")
