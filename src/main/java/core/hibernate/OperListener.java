@@ -28,11 +28,17 @@ public class OperListener implements PostInsertEventListener,PostUpdateEventList
 	
 	private static RocketEQSend rocketEQSend=new RocketEQSend();
 	
+	private static int zero=0;
+	
+	private static int one=1;
+	
+	private static int two=2;
+	
 
 	@Override
 	public void onPostDelete(PostDeleteEvent event) {
 		try {
-			rocketEQSend.sendRocket(objToPojo(event.getEntity()));
+			rocketEQSend.sendRocket(objToPojo(event.getEntity(),two));
 		} catch (MQClientException e) {
 			e.printStackTrace();
 		} catch (RemotingException e) {
@@ -45,7 +51,7 @@ public class OperListener implements PostInsertEventListener,PostUpdateEventList
 	@Override
 	public void onPostUpdate(PostUpdateEvent event) {
 		try {
-			rocketEQSend.sendRocket(objToPojo(event.getEntity()));
+			rocketEQSend.sendRocket(objToPojo(event.getEntity(),one));
 		} catch (MQClientException e) {
 			e.printStackTrace();
 		} catch (RemotingException e) {
@@ -58,7 +64,7 @@ public class OperListener implements PostInsertEventListener,PostUpdateEventList
 	@Override
 	public void onPostInsert(PostInsertEvent event) {
 		try {
-			rocketEQSend.sendRocket(objToPojo(event.getEntity()));
+			rocketEQSend.sendRocket(objToPojo(event.getEntity(),zero));
 		} catch (MQClientException e) {
 			e.printStackTrace();
 		} catch (RemotingException e) {
@@ -74,7 +80,7 @@ public class OperListener implements PostInsertEventListener,PostUpdateEventList
 		return false;
 	}
 	
-	private RocketEQContent objToPojo(Object object){
+	private RocketEQContent objToPojo(Object object,int type){
 		RocketEQContent eqContent=new RocketEQContent();
 		
 		if (object!=null) {
@@ -83,6 +89,8 @@ public class OperListener implements PostInsertEventListener,PostUpdateEventList
 			eqContent.setId(id);
 			eqContent.setTime(System.currentTimeMillis());
 			eqContent.setClassName(clasz);
+			eqContent.setType(type);
+			eqContent.setCreateUser(ObjectUtil.getValueByKey(object, "id").toString());
 		}
 		return eqContent;
 	}

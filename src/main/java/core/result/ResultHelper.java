@@ -9,12 +9,12 @@ public class ResultHelper {
     /**
      * 成功
      */
-    public static String SUCCESS = "01";
+    public static Integer SUCCESS = 1;
 
     /**
      * 失败
      */
-    public static String ERROR = "05";
+    public static Integer ERROR = 5;
 
     /**
      * 系统异常（CSRF、UnCatchException）
@@ -24,7 +24,7 @@ public class ResultHelper {
     /**
      * 状态码
      */
-    private String code;
+    private Integer code;
 
     /**
      * 结果集
@@ -37,26 +37,17 @@ public class ResultHelper {
         this.code = this.SUCCESS;
     }
 
-    public ResultHelper(String code) {
+    public ResultHelper(Integer code) {
 
         this.code = code;
     }
 
-    public ResultHelper(String code, Object data) {
+    public ResultHelper(Integer code, Object data) {
 
         this.code = code;
         this.data = data;
     }
 
-    public String getCode() {
-
-        return code;
-    }
-
-    public void setCode(String code) {
-
-        this.code = code;
-    }
 
     public Object getData() {
 
@@ -67,5 +58,13 @@ public class ResultHelper {
 
         this.data = data;
     }
+
+	public Integer getCode() {
+		return code;
+	}
+
+	public void setCode(Integer code) {
+		this.code = code;
+	}
 
 }

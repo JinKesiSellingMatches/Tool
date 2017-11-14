@@ -16,6 +16,7 @@ import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.BooleanClause.Occur;
@@ -45,6 +46,14 @@ public class LuceneDaoImpl implements LuceneDao {
 	
 	private Integer ONE=1;
 	
+	private Integer HUNDRED=100;
+	
+	static String SERACH="serach";
+	
+	static String[] fieldsUpdate={"tableId","moduleCode"};
+	
+	static String ID="id";
+	
 	/**
 	 * 初始化写入
 	 * @return
@@ -71,6 +80,18 @@ public class LuceneDaoImpl implements LuceneDao {
         return searcher;  
     }
 	
+	private LuceneSerachPOJO documentToPojo(Document doc) throws Exception{
+		LuceneSerachPOJO pojo=new LuceneSerachPOJO();
+		Class luClass = pojo.getClass();
+		java.lang.reflect.Field[] fields = luClass.getDeclaredFields();
+		for (int i = 0; i < fields.length; i++) {
+			java.lang.reflect.Field f = fields[i];
+			f.setAccessible(true);
+			f.set(pojo, doc.get(f.getName()));
+		}
+		return pojo;
+	}
+	
 	/**
 	 * 分页
 	 * @param pageIndex 页码
@@ -90,27 +111,41 @@ public class LuceneDaoImpl implements LuceneDao {
 	@Override
 	public void save(LuceneNode luceneNode) throws Exception {
 		IndexWriter indexWriter=getWriter();
-    	Document document=new Document();
-    	//反射
-    	 Class luClass = luceneNode.getClass();
-    	 java.lang.reflect.Field[] fields = luClass.getDeclaredFields();
-		 for (int i = 0; i < fields.length; i++) {
-			 java.lang.reflect.Field f = fields[i];
-			 f.setAccessible(true);
-			 document.add(new StringField(f.getName(),f.get(luceneNode)==null?"":f.get(luceneNode).toString(),Field.Store.YES));
-		 }
+    	Document document=nodeToDocument(luceneNode);
     	indexWriter.addDocument(document);
     	indexWriter.close();
 	}
 
 	@Override
-	public void update(LuceneNode luceneNode, String tableId, String tableName) {
+	public void update(LuceneNode luceneNode, String tableId, String moduleCode) throws Exception {
+		 
+		//1需要根据tableId 和 moduleCode  这两个字段来确认一条索引数据
+		//2通过luceneNode对象填充Document
+		//3修改
 		
+		//1
+		String [] content={tableId,moduleCode};
+		LuceneSerachPOJO pojo=get(fieldsUpdate, content);
+		IndexWriter indexWriter=getWriter();
+		//2
+    	Document document=nodeToDocument(luceneNode);
+    	indexWriter.addDocument(document);
+    	//3
+    	indexWriter.updateDocument(new Term(ID,pojo.getId()), document);
+    	indexWriter.close();
 	}
 
 	@Override
-	public void delted(String tableId, String tableName) {
+	public void delted(String tableId, String moduleCode) throws Exception {
+		//1需要根据tableId 和 moduleCode  这两个字段来确认一条索引数据
+		//2根据ID删除
 		
+		//1
+		String [] content={tableId,moduleCode};
+		LuceneSerachPOJO pojo=get(fieldsUpdate, content);
+		IndexWriter indexWriter=getWriter();
+		//2
+		indexWriter.deleteDocuments(new Term(ID,pojo.getId()));
 	}
 
 	@Override
@@ -149,7 +184,7 @@ public class LuceneDaoImpl implements LuceneDao {
 				Query query=parser.parse(content[i]);
 				booleanQuery.add(query, Occur.MUST);
 			}
-			TopDocs tds = searcher.search(booleanQuery, 2);
+			TopDocs tds = searcher.search(booleanQuery, ONE);
  			for (ScoreDoc sd:tds.scoreDocs) {
 				Document doc = searcher.doc(sd.doc);
 				//反射
@@ -159,15 +194,42 @@ public class LuceneDaoImpl implements LuceneDao {
 		return new LuceneSerachPOJO();
 	}
 	
-	private LuceneSerachPOJO documentToPojo(Document doc) throws Exception{
-		LuceneSerachPOJO pojo=new LuceneSerachPOJO();
-		Class luClass = pojo.getClass();
-		java.lang.reflect.Field[] fields = luClass.getDeclaredFields();
-		for (int i = 0; i < fields.length; i++) {
-			java.lang.reflect.Field f = fields[i];
-			f.setAccessible(true);
-			f.set(pojo, doc.get(f.getName()));
+	
+
+	@Override
+	public Document nodeToDocument(LuceneNode node) throws Exception {
+		
+		Document document=new Document();
+    	//反射
+    	Class luClass = node.getClass();
+    	java.lang.reflect.Field[] fields = luClass.getDeclaredFields();
+    	for (int i = 0; i < fields.length; i++) {
+    		java.lang.reflect.Field f = fields[i];
+    		f.setAccessible(true);
+    		document.add(new StringField(f.getName(),f.get(node)==null?"":f.get(node).toString(),Field.Store.YES));
+    	}
+    	return document;
+	}
+
+	@Override
+	public List<LuceneSerachPOJO> find(String search) throws Exception {
+		
+		IndexSearcher searcher=getSearcher();
+		QueryParser parser=new QueryParser(SERACH, new KeywordAnalyzer());
+		parser.setAllowLeadingWildcard(true);
+		Query query=parser.parse(search);
+		TopDocs tds = searcher.search(query, HUNDRED);
+		List<LuceneSerachPOJO> pojos=new ArrayList<>();
+		for (ScoreDoc sd:tds.scoreDocs) {
+			Document doc = searcher.doc(sd.doc);
+			//反射
+			pojos.add(documentToPojo(doc));
 		}
-		return pojo;
+		return pojos;
+	}
+	
+	public static void main(String[] args) throws Exception {
+		LuceneDaoImpl impl=new LuceneDaoImpl();
+		impl.find("*ni*");
 	}
 }

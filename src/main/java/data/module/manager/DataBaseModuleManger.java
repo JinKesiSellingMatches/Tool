@@ -71,4 +71,18 @@ public interface DataBaseModuleManger extends BaseDao {
 	 */
 	public ResultHelper sendLucene(RocketEQContent rocketEQContent) throws Exception;
 	
+	/**
+	 * 在查询结束后进行数据检查
+	 * @param baseModuleSearchPOJO
+	 * @return
+	 */
+	public ResultHelper checkDataBaseModuleSearchPOJOData(DataBaseModuleSearchPOJO baseModuleSearchPOJO);
+	
+	/**
+	 * 非空验证
+	 * @param dataBaseModuleSearchPOJO
+	 * @return
+	 */
+	public ResultHelper checkNull(DataBaseModuleSearchPOJO dataBaseModuleSearchPOJO) throws IllegalArgumentException, IllegalAccessException ;
+	
 }

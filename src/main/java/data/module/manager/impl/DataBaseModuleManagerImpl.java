@@ -1,5 +1,6 @@
 package data.module.manager.impl;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +11,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import core.Tool.rocketEQ.POJO.RocketEQContent;
+import core.exception.ErrorEnum;
 import core.result.ResultHelper;
 import data.common.manager.impl.BaseDaoImpl;
 import data.lucene.manager.LuceneNodeManager;
@@ -97,12 +99,51 @@ public class DataBaseModuleManagerImpl extends BaseDaoImpl implements DataBaseMo
 	@Override
 	public ResultHelper sendLucene(RocketEQContent rocketEQContent)throws Exception{
 		
+		ResultHelper result=new ResultHelper();
 		if (rocketEQContent!=null) {
 			DataBaseModule dataBaseModule=getByClassName(rocketEQContent.getClassName());
 			if (dataBaseModule!=null) {
 				DataBaseModuleSearchPOJO pojo=findModuleSearchInfo(dataBaseModule.getSqlContent(),rocketEQContent.getId());
+				pojo.setType(rocketEQContent.getType());
+				pojo.setCreateUser(rocketEQContent.getCreateUser());
+				pojo.setModuleCode(dataBaseModule.getCode());
+				
+				//唯一检查接口
+				result=checkDataBaseModuleSearchPOJOData(pojo);
+				
 				//对lucene 唯一接口
 				luceneNodeManager.CenterProcess(pojo);
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public ResultHelper checkDataBaseModuleSearchPOJOData(DataBaseModuleSearchPOJO baseModuleSearchPOJO) {
+		ResultHelper result=new ResultHelper();
+		try {
+			result=checkNull(baseModuleSearchPOJO);
+		} catch (IllegalArgumentException e) {
+			//TODO 日志异常处理
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			//TODO 日志异常处理
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	@Override
+	public ResultHelper checkNull(DataBaseModuleSearchPOJO dataBaseModuleSearchPOJO) throws IllegalArgumentException, IllegalAccessException {
+		 
+		ResultHelper result=new ResultHelper();
+		Class clasz=dataBaseModuleSearchPOJO.getClass();
+		Field[] fields=clasz.getDeclaredFields();
+		for (int i = 0; i < fields.length; i++) {
+			Field field=fields[i];
+			field.setAccessible(true);
+			if (field.get(dataBaseModuleSearchPOJO)==null) {
+				result.setCode(ErrorEnum.ISNULL.value());
 			}
 		}
 		return null;

@@ -9,6 +9,8 @@ import java.math.BigInteger;
  */
 public class DataBaseModuleSearchPOJO {
 	
+	//TODO 缺少模块
+	
 	/**
 	 * 主键Id
 	 */
@@ -33,6 +35,22 @@ public class DataBaseModuleSearchPOJO {
 	 * 搜索
 	 */
 	public String search;
+	
+	/**
+	 * 操作类型
+	 * 
+	 */
+	public int type;
+	
+	/**
+	 * 创建人
+	 */
+	public String createUser;
+	
+	/**
+	 * 模块
+	 */
+	public String moduleCode;
 
 	public String getId() {
 		return id;
@@ -73,6 +91,30 @@ public class DataBaseModuleSearchPOJO {
 
 	public void setCreateDate(BigInteger createDate) {
 		this.createDate = createDate;
+	}
+
+	public int getType() {
+		return type;
+	}
+
+	public void setType(int type) {
+		this.type = type;
+	}
+
+	public String getCreateUser() {
+		return createUser;
+	}
+
+	public void setCreateUser(String createUser) {
+		this.createUser = createUser;
+	}
+
+	public String getModuleCode() {
+		return moduleCode;
+	}
+
+	public void setModuleCode(String moduleCode) {
+		this.moduleCode = moduleCode;
 	}
 
 }

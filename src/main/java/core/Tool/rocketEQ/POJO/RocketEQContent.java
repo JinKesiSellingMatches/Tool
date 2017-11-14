@@ -24,6 +24,17 @@ public class RocketEQContent {
 	 * 发起时间
 	 */
 	private long time;
+	
+	/**
+	 * 类型
+	 */
+	private int type;
+	
+	/**
+	 * 创建人
+	 */
+	private String createUser;
+	
 
 	public String getId() {
 		return id;
@@ -47,6 +58,22 @@ public class RocketEQContent {
 
 	public void setClassName(String className) {
 		this.className = className;
+	}
+
+	public int getType() {
+		return type;
+	}
+
+	public void setType(int type) {
+		this.type = type;
+	}
+
+	public String getCreateUser() {
+		return createUser;
+	}
+
+	public void setCreateUser(String createUser) {
+		this.createUser = createUser;
 	}
 
 }

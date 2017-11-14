@@ -8,6 +8,7 @@ import com.alibaba.rocketmq.client.exception.MQClientException;
 import com.alibaba.rocketmq.common.consumer.ConsumeFromWhere;
 import com.alibaba.rocketmq.common.message.MessageExt;
 
+import clojure.main;
 import core.Tool.rocketEQ.POJO.RocketEQContent;
 import core.utils.RaceUtils;
 import data.lucene.entity.LuceneNode;
@@ -70,9 +71,9 @@ public class Consumer {
                     try {
                     	dataBaseModuleManger.sendLucene(rocketEQContent);
 					} catch (Exception e) {
+						//TODO 这里需要记录失败
 						System.out.println(e);
 					}
-                    
                 }
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             }
@@ -82,4 +83,9 @@ public class Consumer {
 
         System.err.println("Consumer Started.");
     }
+	
+	public static void main(String[] args) throws MQClientException {
+		Consumer consumer=new  Consumer();
+		consumer.MesConsumer();
+	}
 }

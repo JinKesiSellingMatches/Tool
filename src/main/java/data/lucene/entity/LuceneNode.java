@@ -1,5 +1,6 @@
 package data.lucene.entity;
 
+import java.math.BigInteger;
 
 public class LuceneNode{
 	
@@ -16,7 +17,7 @@ public class LuceneNode{
     /**
      * 创建时间
      */
-    private long createDate;
+    private BigInteger createDate;
 
     /**
      * 最后修改人信息实体
@@ -95,14 +96,6 @@ public class LuceneNode{
 		this.lastModifyUser = lastModifyUser;
 	}
 
-	public long getCreateDate() {
-		return createDate;
-	}
-
-	public void setCreateDate(long createDate) {
-		this.createDate = createDate;
-	}
-
 	public long getLastModifyDate() {
 		return lastModifyDate;
 	}
@@ -133,6 +126,14 @@ public class LuceneNode{
 
 	public void setModuleCode(String moduleCode) {
 		this.moduleCode = moduleCode;
+	}
+
+	public BigInteger getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(BigInteger createDate) {
+		this.createDate = createDate;
 	}
 
 
