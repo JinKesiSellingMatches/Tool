@@ -8,7 +8,7 @@ package core.Tool.rocketEQ.POJO;
  * @author hutao
  *
  */
-public class RocketEQContent {
+public class RocketEQContentPOJO {
 	
 	/**
 	 * 目标ID

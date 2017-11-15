@@ -1,6 +1,9 @@
 package Junit;
 
 
+import java.net.InetAddress;
+import java.net.Socket;
+
 import data.common.manager.impl.LuceneDaoImpl;
 
 public class MainTest {
@@ -18,5 +21,7 @@ public class MainTest {
 //
 //	        t1.start();
 //	        t2.start();
+		
+		System.out.println(InetAddress.getLocalHost());
 	}
 }

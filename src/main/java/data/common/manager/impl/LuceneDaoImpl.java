@@ -110,10 +110,15 @@ public class LuceneDaoImpl implements LuceneDao {
 
 	@Override
 	public void save(LuceneNode luceneNode) throws Exception {
-		IndexWriter indexWriter=getWriter();
-    	Document document=nodeToDocument(luceneNode);
-    	indexWriter.addDocument(document);
-    	indexWriter.close();
+		
+		String[] constents={luceneNode.getTableId(),luceneNode.getModuleCode()};
+		LuceneSerachPOJO pojo=this.get(fieldsUpdate, constents);
+		if (pojo==null) {
+			IndexWriter indexWriter=getWriter();
+			Document document=nodeToDocument(luceneNode);
+			indexWriter.addDocument(document);
+			indexWriter.close();
+		}
 	}
 
 	@Override
@@ -191,7 +196,7 @@ public class LuceneDaoImpl implements LuceneDao {
 				return documentToPojo(doc);
 			}
 		}
-		return new LuceneSerachPOJO();
+		return null;
 	}
 	
 	
@@ -230,6 +235,6 @@ public class LuceneDaoImpl implements LuceneDao {
 	
 	public static void main(String[] args) throws Exception {
 		LuceneDaoImpl impl=new LuceneDaoImpl();
-		impl.find("*ni*");
+		impl.find("*liu*");
 	}
 }

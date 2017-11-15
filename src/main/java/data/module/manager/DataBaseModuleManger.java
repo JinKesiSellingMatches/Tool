@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import clojure.string__init;
-import core.Tool.rocketEQ.POJO.RocketEQContent;
+import core.Tool.rocketEQ.POJO.RocketEQContentPOJO;
 import core.result.ResultHelper;
 import data.common.manager.BaseDao;
 import data.module.entity.DataBaseModule;
@@ -69,7 +69,7 @@ public interface DataBaseModuleManger extends BaseDao {
 	 * @param ro
 	 * @return
 	 */
-	public ResultHelper sendLucene(RocketEQContent rocketEQContent) throws Exception;
+	public ResultHelper sendLucene(RocketEQContentPOJO rocketEQContent) throws Exception;
 	
 	/**
 	 * 在查询结束后进行数据检查

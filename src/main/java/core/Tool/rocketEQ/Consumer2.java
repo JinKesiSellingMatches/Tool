@@ -8,7 +8,7 @@ import com.alibaba.rocketmq.client.exception.MQClientException;
 import com.alibaba.rocketmq.common.consumer.ConsumeFromWhere;
 import com.alibaba.rocketmq.common.message.MessageExt;
 
-import core.Tool.rocketEQ.POJO.RocketEQContent;
+import core.Tool.rocketEQ.POJO.RocketEQContentPOJO;
 import core.utils.RaceUtils;
 import data.lucene.entity.LuceneNode;
 
@@ -67,7 +67,7 @@ public class Consumer2 implements Runnable {
 						continue;
 					}
 					
-					RocketEQContent rocketEQContent = RaceUtils.readKryoObject(RocketEQContent.class, body);
+					RocketEQContentPOJO rocketEQContent = RaceUtils.readKryoObject(RocketEQContentPOJO.class, body);
 					System.out.println(rocketEQContent.getId());
 				 
 				}

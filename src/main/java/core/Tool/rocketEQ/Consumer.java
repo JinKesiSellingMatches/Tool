@@ -9,7 +9,7 @@ import com.alibaba.rocketmq.common.consumer.ConsumeFromWhere;
 import com.alibaba.rocketmq.common.message.MessageExt;
 
 import clojure.main;
-import core.Tool.rocketEQ.POJO.RocketEQContent;
+import core.Tool.rocketEQ.POJO.RocketEQContentPOJO;
 import core.utils.RaceUtils;
 import data.lucene.entity.LuceneNode;
 import data.module.manager.DataBaseModuleManger;
@@ -66,13 +66,14 @@ public class Consumer {
                         continue;
                     }
 
-                    RocketEQContent rocketEQContent = RaceUtils.readKryoObject(RocketEQContent.class, body);
+                    RocketEQContentPOJO rocketEQContent = RaceUtils.readKryoObject(RocketEQContentPOJO.class, body);
                     //向Lucene服务 发送数据
                     try {
                     	dataBaseModuleManger.sendLucene(rocketEQContent);
 					} catch (Exception e) {
 						//TODO 这里需要记录失败
-						System.out.println(e);
+						System.out.println(e.getMessage());
+						return ConsumeConcurrentlyStatus.RECONSUME_LATER;
 					}
                 }
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;

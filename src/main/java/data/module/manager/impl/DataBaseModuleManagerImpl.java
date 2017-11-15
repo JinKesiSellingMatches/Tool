@@ -10,7 +10,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
-import core.Tool.rocketEQ.POJO.RocketEQContent;
+import core.Tool.rocketEQ.POJO.RocketEQContentPOJO;
 import core.exception.ErrorEnum;
 import core.result.ResultHelper;
 import data.common.manager.impl.BaseDaoImpl;
@@ -25,6 +25,8 @@ public class DataBaseModuleManagerImpl extends BaseDaoImpl implements DataBaseMo
 	
 	@Resource
 	private LuceneNodeManager luceneNodeManager;
+	
+	private static int two=2;
 
 	@Override
 	public DataBaseModule getByClassName(String className) {
@@ -97,19 +99,26 @@ public class DataBaseModuleManagerImpl extends BaseDaoImpl implements DataBaseMo
 	}
 
 	@Override
-	public ResultHelper sendLucene(RocketEQContent rocketEQContent)throws Exception{
+	public ResultHelper sendLucene(RocketEQContentPOJO rocketEQContent)throws Exception{
 		
 		ResultHelper result=new ResultHelper();
 		if (rocketEQContent!=null) {
 			DataBaseModule dataBaseModule=getByClassName(rocketEQContent.getClassName());
 			if (dataBaseModule!=null) {
-				DataBaseModuleSearchPOJO pojo=findModuleSearchInfo(dataBaseModule.getSqlContent(),rocketEQContent.getId());
-				pojo.setType(rocketEQContent.getType());
-				pojo.setCreateUser(rocketEQContent.getCreateUser());
-				pojo.setModuleCode(dataBaseModule.getCode());
-				
-				//唯一检查接口
-				result=checkDataBaseModuleSearchPOJOData(pojo);
+				//删除区别于新增和删除
+				DataBaseModuleSearchPOJO pojo=new DataBaseModuleSearchPOJO();
+				if (rocketEQContent.getType()==2) {
+					pojo.setId(rocketEQContent.getId());
+					pojo.setModuleCode(dataBaseModule.getCode());
+				}else {
+					pojo=findModuleSearchInfo(dataBaseModule.getSqlContent(),rocketEQContent.getId());
+					pojo.setType(rocketEQContent.getType());
+					pojo.setCreateUser(rocketEQContent.getCreateUser());
+					pojo.setModuleCode(dataBaseModule.getCode());
+					
+					//唯一检查接口
+					result=checkDataBaseModuleSearchPOJOData(pojo);
+				}
 				
 				//对lucene 唯一接口
 				luceneNodeManager.CenterProcess(pojo);

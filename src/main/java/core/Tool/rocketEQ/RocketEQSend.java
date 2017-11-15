@@ -9,7 +9,8 @@ import com.alibaba.rocketmq.client.producer.SendResult;
 import com.alibaba.rocketmq.common.message.Message;
 import com.alibaba.rocketmq.remoting.exception.RemotingException;
 
-import core.Tool.rocketEQ.POJO.RocketEQContent;
+import core.Tool.rocketEQ.POJO.RocketEQContentPOJO;
+import core.result.ResultHelper;
 import core.utils.RaceUtils;
 import data.lucene.entity.LuceneNode;
 
@@ -17,8 +18,11 @@ import data.lucene.entity.LuceneNode;
 public class RocketEQSend{
 	
 	//发送数据
-	public void sendRocket(RocketEQContent rocketEQContent) throws MQClientException, RemotingException, InterruptedException{
+	public void sendRocket(RocketEQContentPOJO rocketEQContent) throws MQClientException, RemotingException, InterruptedException{
 		
+		ResultHelper result=new ResultHelper();
+		
+		result=checkSend(rocketEQContent);
 		
 		DefaultMQProducer producer=new DefaultMQProducer("Lucene");
 		
@@ -43,6 +47,18 @@ public class RocketEQSend{
 			}
 		});
 		producer.shutdown();
+	}
+	
+	private ResultHelper checkSend(RocketEQContentPOJO rocketEQContent){
+		
+		ResultHelper result=new ResultHelper();
+		
+		return result;
+	}
+	
+	public static void main(String[] args) throws MQClientException, RemotingException, InterruptedException {
+		RocketEQSend rocketEQSend=new RocketEQSend();
+		rocketEQSend.sendRocket(new RocketEQContentPOJO());
 	}
 
 

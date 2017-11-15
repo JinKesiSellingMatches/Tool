@@ -57,8 +57,8 @@ public class DemoController {
 	
 	@RequestMapping("/deleted")
 	@ResponseBody
-	public void deleted(){
-		Demo demo=demoManager.get(Demo.class, "402881e15fb4cfc1015fb4cfec210000");
+	public void deleted(String id){
+		Demo demo=demoManager.get(Demo.class, id);
 		demoManager.delete(demo);
 	}
 }

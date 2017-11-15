@@ -1,7 +1,6 @@
 package data.lucene.manager.impl;
 
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -10,7 +9,6 @@ import core.result.ResultHelper;
 import data.common.manager.impl.LuceneDaoImpl;
 import data.lucene.entity.LuceneNode;
 import data.lucene.manager.LuceneNodeManager;
-import data.lucene.pojo.SaveLuceneRelationshipPOJO;
 import data.module.pojo.DataBaseModuleSearchPOJO;
 
 @Service(value="luceneNodeManager")
@@ -21,10 +19,16 @@ public class LuceneNodeManagerImpl extends LuceneDaoImpl implements LuceneNodeMa
 	private static int one=1;
 	
 	private static int two=2;
+	
+	/**
+	 * 被查询的字段
+	 */
+	static String[] fieldsUpdate={"tableId","moduleCode"};
 
 	@Override
 	public void addLucene(LuceneNode node) throws Exception {
-			this.save(node);
+		
+		this.save(node);
 	}
 
 	@Override

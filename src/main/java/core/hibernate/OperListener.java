@@ -16,7 +16,7 @@ import com.alibaba.rocketmq.client.exception.MQClientException;
 import com.alibaba.rocketmq.remoting.exception.RemotingException;
 
 import core.Tool.rocketEQ.RocketEQSend;
-import core.Tool.rocketEQ.POJO.RocketEQContent;
+import core.Tool.rocketEQ.POJO.RocketEQContentPOJO;
 import core.utils.ObjectUtil;
 
 
@@ -80,8 +80,8 @@ public class OperListener implements PostInsertEventListener,PostUpdateEventList
 		return false;
 	}
 	
-	private RocketEQContent objToPojo(Object object,int type){
-		RocketEQContent eqContent=new RocketEQContent();
+	private RocketEQContentPOJO objToPojo(Object object,int type){
+		RocketEQContentPOJO eqContent=new RocketEQContentPOJO();
 		
 		if (object!=null) {
 			String id=(String) ObjectUtil.getValueByKey(object, "id");
