@@ -2,10 +2,16 @@ package data.rocketEQContent.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.GenericGenerator;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import data.common.entity.CommonEntity;
 
 /**
  * 这个是RocketMQ 挂掉后 向数据库中保存数据
@@ -16,13 +22,14 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Entity
 @Table(name = "tb_sys_rocket_eq_content")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class RocketEQContent {
+@JsonIgnoreProperties(value = { "createUser", "lastModifyUser" })
+public class RocketEQContent extends CommonEntity{
 	
 	/**
 	 * 目标ID
 	 */
-	@Column(name="id")
-	private String id;
+	@Column(name="table_id")
+	private String tableId;
 	
 	/**
 	 * 目标对象
@@ -43,10 +50,10 @@ public class RocketEQContent {
 	private int type;
 	
 	/**
-	 * 创建人
+	 * 操作
 	 */
-	@Column(name="create_user")
-	private String createUser;
+	@Column(name="operating_user")
+	private String operatingUser;
 	
 	/**
 	 * 是否有效 (0有效  1无效)
@@ -87,20 +94,28 @@ public class RocketEQContent {
 		this.type = type;
 	}
 
-	public String getCreateUser() {
-		return createUser;
-	}
-
-	public void setCreateUser(String createUser) {
-		this.createUser = createUser;
-	}
-
 	public int getIsEffective() {
 		return isEffective;
 	}
 
 	public void setIsEffective(int isEffective) {
 		this.isEffective = isEffective;
+	}
+
+	public String getTableId() {
+		return tableId;
+	}
+
+	public void setTableId(String tableId) {
+		this.tableId = tableId;
+	}
+
+	public String getOperatingUser() {
+		return operatingUser;
+	}
+
+	public void setOperatingUser(String operatingUser) {
+		this.operatingUser = operatingUser;
 	}
 
 }

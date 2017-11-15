@@ -13,7 +13,7 @@ public class RocketEQContentPOJO {
 	/**
 	 * 目标ID
 	 */
-	private String id;
+	private String tableId;
 	
 	/**
 	 * 目标对象
@@ -33,17 +33,8 @@ public class RocketEQContentPOJO {
 	/**
 	 * 创建人
 	 */
-	private String createUser;
+	private String operatingUser;
 	
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
 	public long getTime() {
 		return time;
 	}
@@ -68,12 +59,20 @@ public class RocketEQContentPOJO {
 		this.type = type;
 	}
 
-	public String getCreateUser() {
-		return createUser;
+	public String getTableId() {
+		return tableId;
 	}
 
-	public void setCreateUser(String createUser) {
-		this.createUser = createUser;
+	public void setTableId(String tableId) {
+		this.tableId = tableId;
+	}
+
+	public String getOperatingUser() {
+		return operatingUser;
+	}
+
+	public void setOperatingUser(String operatingUser) {
+		this.operatingUser = operatingUser;
 	}
 
 }

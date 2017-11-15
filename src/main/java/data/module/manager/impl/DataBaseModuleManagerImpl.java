@@ -107,13 +107,13 @@ public class DataBaseModuleManagerImpl extends BaseDaoImpl implements DataBaseMo
 			if (dataBaseModule!=null) {
 				//删除区别于新增和删除
 				DataBaseModuleSearchPOJO pojo=new DataBaseModuleSearchPOJO();
-				if (rocketEQContent.getType()==2) {
-					pojo.setId(rocketEQContent.getId());
+				if (rocketEQContent.getType()==-1) {
+					pojo.setId(rocketEQContent.getTableId());
 					pojo.setModuleCode(dataBaseModule.getCode());
 				}else {
-					pojo=findModuleSearchInfo(dataBaseModule.getSqlContent(),rocketEQContent.getId());
+					pojo=findModuleSearchInfo(dataBaseModule.getSqlContent(),rocketEQContent.getTableId());
 					pojo.setType(rocketEQContent.getType());
-					pojo.setCreateUser(rocketEQContent.getCreateUser());
+					pojo.setCreateUser(rocketEQContent.getOperatingUser());
 					pojo.setModuleCode(dataBaseModule.getCode());
 					
 					//唯一检查接口

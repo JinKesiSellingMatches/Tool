@@ -10,7 +10,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.alibaba.rocketmq.client.exception.MQClientException;
 
-import core.Tool.rocketEQ.Consumer3;
 import core.utils.ClientSocketUtil;
 import data.demo.manager.DemoManager;
 

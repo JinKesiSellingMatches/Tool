@@ -86,11 +86,11 @@ public class OperListener implements PostInsertEventListener,PostUpdateEventList
 		if (object!=null) {
 			String id=(String) ObjectUtil.getValueByKey(object, "id");
 			String clasz=object.getClass().toString();
-			eqContent.setId(id);
+			eqContent.setTableId(id);
 			eqContent.setTime(System.currentTimeMillis());
 			eqContent.setClassName(clasz);
 			eqContent.setType(type);
-			eqContent.setCreateUser(ObjectUtil.getValueByKey(object, "id").toString());
+			eqContent.setOperatingUser(ObjectUtil.getValueByKey(object, "createUser")==null?"":ObjectUtil.getValueByKey(object, "createUser").toString());
 		}
 		return eqContent;
 	}
