@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.ext.MessageBodyWriter;
+
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.analysis.core.StopAnalyzer;
@@ -29,6 +31,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
+import core.utils.FileUtils;
 import data.common.manager.LuceneDao;
 import data.lucene.entity.LuceneNode;
 import data.lucene.pojo.LuceneSerachPOJO;
@@ -54,12 +57,19 @@ public class LuceneDaoImpl implements LuceneDao {
 	
 	static String ID="id";
 	
+	private FileUtils fileUtils=new FileUtils();
+	
 	/**
 	 * 初始化写入
 	 * @return
 	 * @throws Exception
 	 */
-	private static IndexWriter  getWriter() throws Exception{
+	private IndexWriter  getWriter() throws Exception{
+		
+//		boolean flag=fileUtils.isEmptyFolder(indexPath);
+//		if (flag) {
+//			return null;
+//		}
     	Directory directory = FSDirectory.open(new File(indexPath));  
         Analyzer analyzer = new StandardAnalyzer();  
         IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_4_10_4,analyzer);  
@@ -73,7 +83,11 @@ public class LuceneDaoImpl implements LuceneDao {
 	 * @return
 	 * @throws Exception
 	 */
-	public IndexSearcher getSearcher() throws Exception { 
+	private IndexSearcher getSearcher() throws Exception {
+		boolean flag=fileUtils.isEmptyFolder(indexPath);
+		if (flag) {
+			return null;
+		}
     	Directory directory = FSDirectory.open(new File(indexPath));
         IndexReader reader = DirectoryReader.open(directory);  
         IndexSearcher searcher = new IndexSearcher(reader); 
@@ -115,9 +129,11 @@ public class LuceneDaoImpl implements LuceneDao {
 		LuceneSerachPOJO pojo=this.get(fieldsUpdate, constents);
 		if (pojo==null) {
 			IndexWriter indexWriter=getWriter();
-			Document document=nodeToDocument(luceneNode);
-			indexWriter.addDocument(document);
-			indexWriter.close();
+			if (indexWriter!=null) {
+				Document document=nodeToDocument(luceneNode);
+				indexWriter.addDocument(document);
+				indexWriter.close();
+			}
 		}
 	}
 
@@ -132,12 +148,14 @@ public class LuceneDaoImpl implements LuceneDao {
 		String [] content={tableId,moduleCode};
 		LuceneSerachPOJO pojo=get(fieldsUpdate, content);
 		IndexWriter indexWriter=getWriter();
-		//2
-    	Document document=nodeToDocument(luceneNode);
-    	indexWriter.addDocument(document);
-    	//3
-    	indexWriter.updateDocument(new Term(ID,pojo.getId()), document);
-    	indexWriter.close();
+		if (indexWriter!=null) {
+			//2
+			Document document=nodeToDocument(luceneNode);
+			indexWriter.addDocument(document);
+			//3
+			indexWriter.updateDocument(new Term("tableId",pojo.getTableId()), document);
+			indexWriter.close();
+		}
 	}
 
 	@Override
@@ -149,8 +167,10 @@ public class LuceneDaoImpl implements LuceneDao {
 		String [] content={tableId,moduleCode};
 		LuceneSerachPOJO pojo=get(fieldsUpdate, content);
 		IndexWriter indexWriter=getWriter();
-		//2
-		indexWriter.deleteDocuments(new Term(ID,pojo.getId()));
+		if (indexWriter!=null) {
+			//2
+			indexWriter.deleteDocuments(new Term(ID,pojo.getLuceneId()));
+		}
 	}
 
 	@Override
@@ -158,20 +178,22 @@ public class LuceneDaoImpl implements LuceneDao {
 		
 		if (search!=null) {
 			IndexSearcher searcher = getSearcher();
-			QueryParser parser = new QueryParser(searchFiled,new KeywordAnalyzer());
-			parser.setAllowLeadingWildcard(true);
-			Query query=parser.parse(search);
-			//先获取上一页的最后一个元素
-			ScoreDoc lastSd = getLastScoreDoc(pageIndex,pageSize,query,searcher);
-			//通过最后一个元素搜索下页的pageSize个元素
-			TopDocs tds = searcher.searchAfter(lastSd,query,pageSize);
-			List<LuceneSerachPOJO> pojos=new ArrayList<>();
-			for (ScoreDoc sd:tds.scoreDocs) {
-				Document doc = searcher.doc(sd.doc);
-				//反射
-				pojos.add(documentToPojo(doc));
+			if (searcher!=null) {
+				QueryParser parser = new QueryParser(searchFiled,new KeywordAnalyzer());
+				parser.setAllowLeadingWildcard(true);
+				Query query=parser.parse(search);
+				//先获取上一页的最后一个元素
+				ScoreDoc lastSd = getLastScoreDoc(pageIndex,pageSize,query,searcher);
+				//通过最后一个元素搜索下页的pageSize个元素
+				TopDocs tds = searcher.searchAfter(lastSd,query,pageSize);
+				List<LuceneSerachPOJO> pojos=new ArrayList<>();
+				for (ScoreDoc sd:tds.scoreDocs) {
+					Document doc = searcher.doc(sd.doc);
+					//反射
+					pojos.add(documentToPojo(doc));
+				}
+				return pojos;
 			}
-			return pojos;
 		}
 		return new ArrayList<>();
 	}
@@ -182,19 +204,21 @@ public class LuceneDaoImpl implements LuceneDao {
 		//字段数必须与内容数相等
 		if (fields!=null&&content!=null&&fields.length==fields.length) {
 			IndexSearcher searcher=getSearcher();
-			BooleanQuery booleanQuery=new BooleanQuery();
-			for (int i = 0; i < fields.length; i++) {
-				QueryParser parser=new QueryParser(fields[i], new KeywordAnalyzer());
-				parser.setAllowLeadingWildcard(true);
-				Query query=parser.parse(content[i]);
-				booleanQuery.add(query, Occur.MUST);
-			}
-			TopDocs tds = searcher.search(booleanQuery, ONE);
- 			for (ScoreDoc sd:tds.scoreDocs) {
-				Document doc = searcher.doc(sd.doc);
-				//反射
-				return documentToPojo(doc);
-			}
+			if (searcher!=null) {
+				BooleanQuery booleanQuery=new BooleanQuery();
+				for (int i = 0; i < fields.length; i++) {
+					QueryParser parser=new QueryParser(fields[i], new KeywordAnalyzer());
+					parser.setAllowLeadingWildcard(true);
+					Query query=parser.parse(content[i]);
+					booleanQuery.add(query, Occur.MUST);
+				}
+				TopDocs tds = searcher.search(booleanQuery, ONE);
+				for (ScoreDoc sd:tds.scoreDocs) {
+					Document doc = searcher.doc(sd.doc);
+					//反射
+					return documentToPojo(doc);
+				}
+ 			}
 		}
 		return null;
 	}
@@ -220,21 +244,24 @@ public class LuceneDaoImpl implements LuceneDao {
 	public List<LuceneSerachPOJO> find(String search) throws Exception {
 		
 		IndexSearcher searcher=getSearcher();
-		QueryParser parser=new QueryParser(SERACH, new KeywordAnalyzer());
-		parser.setAllowLeadingWildcard(true);
-		Query query=parser.parse(search);
-		TopDocs tds = searcher.search(query, HUNDRED);
-		List<LuceneSerachPOJO> pojos=new ArrayList<>();
-		for (ScoreDoc sd:tds.scoreDocs) {
-			Document doc = searcher.doc(sd.doc);
-			//反射
-			pojos.add(documentToPojo(doc));
+		if (searcher!=null) {
+			QueryParser parser=new QueryParser(SERACH, new KeywordAnalyzer());
+			parser.setAllowLeadingWildcard(true);
+			Query query=parser.parse(search);
+			TopDocs tds = searcher.search(query, HUNDRED);
+			List<LuceneSerachPOJO> pojos=new ArrayList<>();
+			for (ScoreDoc sd:tds.scoreDocs) {
+				Document doc = searcher.doc(sd.doc);
+				//反射
+				pojos.add(documentToPojo(doc));
+			}
+			return pojos;
 		}
-		return pojos;
+		return new ArrayList<>();
 	}
 	
 	public static void main(String[] args) throws Exception {
 		LuceneDaoImpl impl=new LuceneDaoImpl();
-		impl.find("*liu*");
+		impl.find("*hutao*");
 	}
 }

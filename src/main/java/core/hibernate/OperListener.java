@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import com.alibaba.rocketmq.client.exception.MQClientException;
 import com.alibaba.rocketmq.remoting.exception.RemotingException;
 
-import core.Tool.rocketEQ.RocketEQSend;
+import core.Tool.rocketEQ.RocketMQSend;
 import core.Tool.rocketEQ.POJO.RocketEQContentPOJO;
 import core.utils.ObjectUtil;
 
@@ -26,7 +26,7 @@ public class OperListener implements PostInsertEventListener,PostUpdateEventList
 
 	private static final long serialVersionUID = 5815991091783798586L;
 	
-	private static RocketEQSend rocketEQSend=new RocketEQSend();
+	private static RocketMQSend rocketEQSend=new RocketMQSend();
 	
 	private static int zero=0;
 	

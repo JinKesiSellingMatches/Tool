@@ -11,7 +11,7 @@
 		http://www.springframework.org/schema/aop 
 		http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
 
-	<!--创建JDBC数据源 -->
+	<!--创建JDBC数据源(Lucene数据源（默认数据源）) -->
 	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
 		destroy-method="close">
 		<property name="driverClassName" value="${db.driver}" />
@@ -40,6 +40,40 @@
 		<property name="removeAbandoned" value="true" /> <!-- 打开removeAbandoned功能 -->
 		<property name="removeAbandonedTimeout" value="1800" /> <!-- 1800秒，也就是30分钟 -->
 		<property name="logAbandoned" value="true" /> <!-- 关闭abanded连接时输出错误日志 -->
+		<property name="poolPreparedStatements" value="true"></property>
+	</bean>
+	
+	
+	<!--Gaia数据源 -->
+	<bean id="dataSourceGaia" class="com.alibaba.druid.pool.DruidDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="${dbGaia.driver}" />
+		<property name="url" value="${dbGaia.url}" />
+		<property name="username" value="${dbGaia.username}" />
+		<property name="password" value="${dbGaia.password}" />
+		<property name="filters" value="stat" />
+		<!-- 最大并发连接数 -->
+		<property name="maxActive" value="${dbGaia.maxActive}" />
+		<property name="maxIdle" value="${dbGaia.maxIdle}" />
+		<!-- 最小空闲连接数 -->
+		<property name="minIdle" value="${dbGaia.minIdle}" />
+		<!-- 初始化连接数量 -->
+		<property name="initialSize" value="5" />
+		<!-- 配置获取连接等待超时的时间 -->
+		<property name="maxWait" value="60000" />
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		<property name="validationQuery" value=" SELECT 'x' FROM DUAL " />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<property name="maxOpenPreparedStatements" value="20" />
+		<property name="removeAbandoned" value="true" /> <!-- 打开removeAbandoned功能 -->
+		<property name="removeAbandonedTimeout" value="1800" /> <!-- 1800秒，也就是30分钟 -->
+		<property name="logAbandoned" value="true" /> <!-- 关闭abanded连接时输出错误日志 -->
+		<property name="poolPreparedStatements" value="false"></property>
 	</bean>
 
 	<!-- 配置hibernate的SessionFactory -->
@@ -67,34 +101,49 @@
 		<property name="packagesToScan" value="data.**.entity" />
 	</bean>
 	
-	<!--  <bean class="core.hibernate.HibernateEvent">
-		<property name="sessionFactory" ref="sessionFactory" />
-		<property name="listeners">
-			<map>
-			    <entry key="save-update"  value-ref="operListener"></entry>
-			</map>
+	<!-- 配置hibernate的SessionFactory（GAIA） -->
+	<bean id="sessionFactoryGaia"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<!-- 注入数据源 相关信息看源码 -->
+		<property name="dataSource" ref="dataSourceGaia" />
+		<!-- hibernate配置信息 -->
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+				<prop key="hibernate.format_sql">${hibernate.format_sql}</prop>
+				<prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>
+
+				<!-- 开启二级缓存 ehcache -->
+				<prop key="hibernate.cache.use_second_level_cache">${hibernate.cache.use_second_level_cache}</prop>
+				<prop key="hibernate.cache.use_query_cache">${hibernate.cache.use_query_cache}</prop>
+				<prop key="hibernate.cache.region.factory_class">${hibernate.cache.region.factory_class}</prop>
+				<prop key="hibernate.cache.provider_configuration_file_resource_path">${hibernate.cache.provider_configuration_file_resource_path}
+				</prop>
+			</props>
 		</property>
 	</bean>
-	<bean id="operListener" class="core.hibernate.OperListener"></bean>-->
 	
-	
-
 	<!-- 配置事务管理器 -->
 	<bean id="transactionManager"
 		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 	
-		<bean id="txManager"
+	<bean id="txManager"
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
 		p:dataSource-ref="dataSource"/> 
+		
+	<!-- 配置事务管理器 -->
+	<bean id="transactionManagerGaia"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactoryGaia" />
+	</bean>
 	
-<!-- 	<bean  id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">  
-	  <property name="dataSource">  
-	   	<ref bean="dataSource" />  
-	  </property>  
-	 </bean> -->
-
+	<bean id="txManagerGaia"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+		p:dataSource-ref="dataSourceGaia"/> 	
+	
 	<!-- 配置事务增强处理Bean，指定事务管理器 -->
 	<tx:advice id="transactionAdvice" transaction-manager="transactionManager">
 		<!-- 配置详细事务处理语义 -->
@@ -126,6 +175,40 @@
 		<!-- 指定在txAdvice切入点应用txAdvice事务增强处理 -->
 		<aop:advisor pointcut-ref="transactionPointcut"
 			advice-ref="transactionAdvice" />
+	</aop:config>
+	
+	
+	<tx:advice id="transactionAdviceGaia" transaction-manager="transactionManagerGaia">
+		<!-- 配置详细事务处理语义 -->
+		<tx:attributes>
+		
+		   <tx:method name="do*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="save*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="insert*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="update*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="delete*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="batch*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="execute*" propagation="REQUIRED" read-only="true" />
+			
+			<tx:method name="get*" propagation="SUPPORTS" read-only="true" />
+			<tx:method name="find*" propagation="SUPPORTS" read-only="true" />
+			<tx:method name="select*" propagation="SUPPORTS" read-only="true" />
+			<tx:method name="load*" propagation="SUPPORTS" read-only="true" />
+
+			<!-- 其他采用默认事务方式 -->
+			<tx:method name="*" />
+
+		</tx:attributes>
+	</tx:advice>
+
+	<!-- Spring aop事务管理 -->
+	<aop:config>
+		<!-- 配置切入点 -->
+		<aop:pointcut id="transactionPointcutGaia"
+			expression="execution(* data.*.manager..*Impl.*(..))" />
+		<!-- 指定在txAdvice切入点应用txAdvice事务增强处理 -->
+		<aop:advisor pointcut-ref="transactionPointcutGaia"
+			advice-ref="transactionAdviceGaia" />
 	</aop:config>
 
 </beans>

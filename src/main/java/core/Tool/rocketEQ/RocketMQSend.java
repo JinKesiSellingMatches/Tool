@@ -15,7 +15,7 @@ import core.utils.RaceUtils;
 import data.lucene.entity.LuceneNode;
 
 
-public class RocketEQSend{
+public class RocketMQSend{
 	
 	//发送数据
 	public void sendRocket(RocketEQContentPOJO rocketEQContent) throws MQClientException, RemotingException, InterruptedException{
@@ -57,7 +57,7 @@ public class RocketEQSend{
 	}
 	
 	public static void main(String[] args) throws MQClientException, RemotingException, InterruptedException {
-		RocketEQSend rocketEQSend=new RocketEQSend();
+		RocketMQSend rocketEQSend=new RocketMQSend();
 		rocketEQSend.sendRocket(new RocketEQContentPOJO());
 	}
 

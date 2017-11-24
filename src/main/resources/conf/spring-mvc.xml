@@ -32,6 +32,9 @@
 	<!-- rocketMQ -->
 	<context:component-scan base-package="core.Tool.rocketEQ" />
 	
+	<!-- spring -->
+	<context:component-scan base-package="core.springSupport.utils" />
+	
 	<!-- rocketMQ -->
 	<context:component-scan base-package="data.task" />
 	

@@ -7,7 +7,7 @@ public class LuceneNode{
 	/**
      * 主键
      */
-	private String id;
+	private String luceneId;
 
     /**
      * 创建人信息实体
@@ -71,14 +71,6 @@ public class LuceneNode{
 		this.serach = serach;
 	}
 
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
 	public String getCreateUser() {
 		return createUser;
 	}
@@ -134,6 +126,14 @@ public class LuceneNode{
 
 	public void setCreateDate(BigInteger createDate) {
 		this.createDate = createDate;
+	}
+
+	public String getLuceneId() {
+		return luceneId;
+	}
+
+	public void setLuceneId(String luceneId) {
+		this.luceneId = luceneId;
 	}
 
 

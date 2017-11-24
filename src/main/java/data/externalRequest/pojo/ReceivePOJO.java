@@ -1,14 +1,11 @@
-package core.Tool.rocketEQ.POJO;
-
+package data.externalRequest.pojo;
 
 /**
- * 消息队列发送/接收消息标准格式
- * 只对 insert,update,deleted有效
- * 
+ * 唯一接收 数据地方
  * @author hutao
  *
  */
-public class RocketEQContentPOJO {
+public class ReceivePOJO {
 	
 	/**
 	 * 目标ID
@@ -39,13 +36,13 @@ public class RocketEQContentPOJO {
 	 * 来源
 	 */
 	private String source;
-	
-	public long getTime() {
-		return time;
+
+	public String getTableId() {
+		return tableId;
 	}
 
-	public void setTime(long time) {
-		this.time = time;
+	public void setTableId(String tableId) {
+		this.tableId = tableId;
 	}
 
 	public String getClassName() {
@@ -56,20 +53,20 @@ public class RocketEQContentPOJO {
 		this.className = className;
 	}
 
+	public long getTime() {
+		return time;
+	}
+
+	public void setTime(long time) {
+		this.time = time;
+	}
+
 	public int getType() {
 		return type;
 	}
 
 	public void setType(int type) {
 		this.type = type;
-	}
-
-	public String getTableId() {
-		return tableId;
-	}
-
-	public void setTableId(String tableId) {
-		this.tableId = tableId;
 	}
 
 	public String getOperatingUser() {

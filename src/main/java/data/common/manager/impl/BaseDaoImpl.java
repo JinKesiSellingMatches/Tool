@@ -6,6 +6,8 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.Projections;
 import org.hibernate.transform.Transformers;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.TransactionDefinition;
@@ -19,6 +21,8 @@ import data.common.page.PageInfo;
 import data.common.query.HqlQueryParams;
 import data.common.query.QueryParams;
 import data.common.query.SqlQueryParams;
+import data.common.support.GaiaDaoSupport;
+import data.common.support.LuceneDaoSupport;
 
 import javax.annotation.Resource;
 import java.io.Serializable;
@@ -36,10 +40,10 @@ import java.util.Map;
  * @date 2016年8月18日 上午10:30:20 @v1.0
  */
 @Repository("baseDao")
-public class BaseDaoImpl implements BaseDao {
+public class BaseDaoImpl extends LuceneDaoSupport implements BaseDao {
 
-    @Resource
-    private SessionFactory sessionFactory;
+/*	@Qualifier("sessionFactory")
+    private SessionFactory sessionFactory;*/
     
     @Resource
     private DataSourceTransactionManager  txManager;
@@ -689,10 +693,7 @@ public class BaseDaoImpl implements BaseDao {
         return ((Long) criteria.getExecutableCriteria(getCurrentSession()).setProjection(Projections.rowCount()).uniqueResult()).intValue();
     }
 
-    public Session getCurrentSession() {
-
-        return this.sessionFactory.getCurrentSession();
-    }
+   
 
     @Override
     public List<?> getListByCriteria(DetachedCriteria criteria, Integer startPage, Integer pageSize) {
@@ -956,5 +957,10 @@ public class BaseDaoImpl implements BaseDao {
 			}
 		}
     	return obj;
+	}
+
+	@Override
+	public void test() {
+		System.out.println("BaseDao");
 	}
 }

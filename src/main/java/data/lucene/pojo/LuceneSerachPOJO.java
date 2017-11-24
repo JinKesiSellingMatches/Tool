@@ -6,12 +6,14 @@ public class LuceneSerachPOJO {
     /**
      * 搜索,唯一ID
      */
-    private String serach,id;
+    private String serach,luceneId;
     
     /**
      *所属模块                                                             
      */
-    private String module;
+    private String moduleCode;
+    
+    private String tableId;
 
 	public String getSerach() {
 		return serach;
@@ -21,20 +23,28 @@ public class LuceneSerachPOJO {
 		this.serach = serach;
 	}
 
-	public String getModule() {
-		return module;
+	public String getModuleCode() {
+		return moduleCode;
 	}
 
-	public void setModule(String module) {
-		this.module = module;
+	public void setModuleCode(String moduleCode) {
+		this.moduleCode = moduleCode;
 	}
 
-	public String getId() {
-		return id;
+	public String getTableId() {
+		return tableId;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setTableId(String tableId) {
+		this.tableId = tableId;
+	}
+
+	public String getLuceneId() {
+		return luceneId;
+	}
+
+	public void setLuceneId(String luceneId) {
+		this.luceneId = luceneId;
 	}
 
 }

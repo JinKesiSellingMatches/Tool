@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import core.result.ResultHelper;
+import core.utils.UUIDUtil;
 import data.common.manager.impl.LuceneDaoImpl;
 import data.lucene.entity.LuceneNode;
 import data.lucene.manager.LuceneNodeManager;
@@ -76,7 +77,7 @@ public class LuceneNodeManagerImpl extends LuceneDaoImpl implements LuceneNodeMa
 			
 			node.setCreateUser(pojo.getCreateUser());
 			node.setModuleCode(pojo.getModuleCode());
-			node.setId(UUID.randomUUID().toString());
+			node.setLuceneId(UUIDUtil.generateUuid());
 			return node;
 		}
 		return null;

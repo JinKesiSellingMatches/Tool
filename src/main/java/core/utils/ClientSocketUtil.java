@@ -22,7 +22,14 @@ public class ClientSocketUtil {
 		}   
 	}
 	
-	public static void main(String[] args) {
-		ClientSocketUtil clientSocketUtil=new ClientSocketUtil(9876);
+	public static void main(String[] args){
+		try {
+			server=new Socket("47.94.15.232",9876);
+			System.out.println("成功");
+		} catch (Exception e) {
+			System.out.println("失败");
+			// TODO: handle exception
+		}
+		
 	}
 }

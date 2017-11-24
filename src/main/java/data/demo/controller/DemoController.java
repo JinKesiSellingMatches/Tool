@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import data.common.manager.BaseGaiaDao;
 import data.demo.entity.Demo;
 import data.demo.manager.DemoManager;
 
@@ -17,6 +18,9 @@ public class DemoController {
 	
 	@Resource
 	private DemoManager demoManager;
+	
+	@Resource
+	private BaseGaiaDao baseGaiaDao;
 	
 	
 	
@@ -60,5 +64,11 @@ public class DemoController {
 	public void deleted(String id){
 		Demo demo=demoManager.get(Demo.class, id);
 		demoManager.delete(demo);
+	}
+	
+	@RequestMapping("/find")
+	@ResponseBody
+	public void find(){
+		System.out.println(baseGaiaDao.findBySql("select * from tb_sys_user"));
 	}
 }
