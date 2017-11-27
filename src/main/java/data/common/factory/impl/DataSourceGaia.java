@@ -28,7 +28,7 @@ public class DataSourceGaia implements DataSourceInterface {
 	BaseGaiaDao baseGaiaDao = (BaseGaiaDao) SpringHelper.getBean("baseGaiaDao");
 	
 	@Override
-	public ResultHelper dataSource(RocketEQContentPOJO pojo) throws ToolException {
+	public ResultHelper dataSource(RocketEQContentPOJO pojo) throws ToolException,Exception {
 		
 		ResultHelper result=new ResultHelper();
 		if (pojo!=null) {

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.constraints.Null;
 import javax.ws.rs.ext.MessageBodyWriter;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -49,7 +50,7 @@ public class LuceneDaoImpl implements LuceneDao {
 	
 	private Integer ONE=1;
 	
-	private Integer HUNDRED=100;
+	private Integer MILLION=10000;
 	
 	static String SERACH="serach";
 	
@@ -125,14 +126,24 @@ public class LuceneDaoImpl implements LuceneDao {
 	@Override
 	public void save(LuceneNode luceneNode) throws Exception {
 		
+		
 		String[] constents={luceneNode.getTableId(),luceneNode.getModuleCode()};
 		LuceneSerachPOJO pojo=this.get(fieldsUpdate, constents);
 		if (pojo==null) {
 			IndexWriter indexWriter=getWriter();
-			if (indexWriter!=null) {
-				Document document=nodeToDocument(luceneNode);
-				indexWriter.addDocument(document);
-				indexWriter.close();
+			try {
+				if (indexWriter!=null) {
+					Document document=nodeToDocument(luceneNode);
+					indexWriter.addDocument(document);
+					indexWriter.close();
+				}
+			} finally{
+				try {
+					if (indexWriter!=null) {
+						indexWriter.close();
+					}	
+				} catch (Exception e) {
+				}
 			}
 		}
 	}
@@ -148,14 +159,24 @@ public class LuceneDaoImpl implements LuceneDao {
 		String [] content={tableId,moduleCode};
 		LuceneSerachPOJO pojo=get(fieldsUpdate, content);
 		IndexWriter indexWriter=getWriter();
-		if (indexWriter!=null) {
-			//2
-			Document document=nodeToDocument(luceneNode);
-			indexWriter.addDocument(document);
-			//3
-			indexWriter.updateDocument(new Term("tableId",pojo.getTableId()), document);
-			indexWriter.close();
+		try {
+			if (indexWriter!=null) {
+				//2
+				Document document=nodeToDocument(luceneNode);
+				indexWriter.addDocument(document);
+				//3
+				indexWriter.updateDocument(new Term("tableId",pojo.getTableId()), document);
+				indexWriter.close();
+			}
+		} finally{
+			try {
+				if (indexWriter!=null) {
+					indexWriter.close();
+				}	
+			} catch (Exception e) {
+			}
 		}
+		
 	}
 
 	@Override
@@ -248,7 +269,7 @@ public class LuceneDaoImpl implements LuceneDao {
 			QueryParser parser=new QueryParser(SERACH, new KeywordAnalyzer());
 			parser.setAllowLeadingWildcard(true);
 			Query query=parser.parse(search);
-			TopDocs tds = searcher.search(query, HUNDRED);
+			TopDocs tds = searcher.search(query, MILLION);
 			List<LuceneSerachPOJO> pojos=new ArrayList<>();
 			for (ScoreDoc sd:tds.scoreDocs) {
 				Document doc = searcher.doc(sd.doc);

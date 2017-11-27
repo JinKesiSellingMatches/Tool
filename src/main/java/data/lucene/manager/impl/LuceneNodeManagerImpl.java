@@ -1,8 +1,11 @@
 package data.lucene.manager.impl;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
+import org.docx4j.docProps.variantTypes.Array;
 import org.springframework.stereotype.Service;
 
 import core.result.ResultHelper;
@@ -10,6 +13,7 @@ import core.utils.UUIDUtil;
 import data.common.manager.impl.LuceneDaoImpl;
 import data.lucene.entity.LuceneNode;
 import data.lucene.manager.LuceneNodeManager;
+import data.lucene.pojo.LuceneSerachPOJO;
 import data.module.pojo.DataBaseModuleSearchPOJO;
 
 @Service(value="luceneNodeManager")
@@ -33,11 +37,10 @@ public class LuceneNodeManagerImpl extends LuceneDaoImpl implements LuceneNodeMa
 	}
 
 	@Override
-	public ResultHelper CenterProcess(DataBaseModuleSearchPOJO pojo) {
+	public ResultHelper CenterProcess(DataBaseModuleSearchPOJO pojo) throws Exception {
 		
 		//TODO 必须重构代码 
 		ResultHelper result=new ResultHelper();
-		try {
 			if (pojo.getType()==zero) {
 				//添加
 				addLucene(dataBaseModuleSearchPOJOToLuceneNode(pojo));
@@ -48,9 +51,6 @@ public class LuceneNodeManagerImpl extends LuceneDaoImpl implements LuceneNodeMa
 				//删除
 				deletedLucene(dataBaseModuleSearchPOJOToLuceneNode(pojo));
 			}
-		} catch (Exception e) {
-			//TODO 日志记录 在操作Lucene时异常记录
-		}
 		return null;
 	}
 
@@ -81,5 +81,15 @@ public class LuceneNodeManagerImpl extends LuceneDaoImpl implements LuceneNodeMa
 			return node;
 		}
 		return null;
+	}
+
+	@Override
+	public List<LuceneSerachPOJO> search(String search) throws Exception {
+		
+		List<LuceneSerachPOJO> pojos=new ArrayList<>();
+		
+		
+		pojos=this.find("*"+search+"*");
+		return pojos;
 	}
 }

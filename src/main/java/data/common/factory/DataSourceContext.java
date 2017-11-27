@@ -14,7 +14,7 @@ public class DataSourceContext {
 
 	private DataSourceInterface orderInterface;
 
-	public ResultHelper dataSource(RocketEQContentPOJO pojo) throws ToolException {
+	public ResultHelper dataSource(RocketEQContentPOJO pojo) throws ToolException ,Exception{
 
 		orderInterface = DataSourceFactory.getInstance().creator(pojo.getSource());
 

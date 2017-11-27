@@ -1,8 +1,11 @@
 package data.lucene.manager;
 
+import java.util.List;
+
 import core.result.ResultHelper;
 import data.common.manager.LuceneDao;
 import data.lucene.entity.LuceneNode;
+import data.lucene.pojo.LuceneSerachPOJO;
 import data.lucene.pojo.SaveLuceneRelationshipPOJO;
 import data.module.pojo.DataBaseModuleSearchPOJO;
 
@@ -21,7 +24,7 @@ public interface LuceneNodeManager extends LuceneDao {
 	 * type字段来确认是什么操作
 	 * @param pojo
 	 */
-	public ResultHelper CenterProcess(DataBaseModuleSearchPOJO pojo);
+	public ResultHelper CenterProcess(DataBaseModuleSearchPOJO pojo) throws Exception;
 	
 	/**
 	 * 修改接口
@@ -42,5 +45,12 @@ public interface LuceneNodeManager extends LuceneDao {
 	 * @return
 	 */
 	public LuceneNode dataBaseModuleSearchPOJOToLuceneNode(DataBaseModuleSearchPOJO node);
+	
+	/**
+	 * 查询
+	 * @param search
+	 * @return
+	 */
+	public List<LuceneSerachPOJO> search(String search) throws Exception ;
 
 }

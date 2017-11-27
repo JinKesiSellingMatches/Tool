@@ -8,13 +8,9 @@ import com.alibaba.rocketmq.client.exception.MQClientException;
 import com.alibaba.rocketmq.common.consumer.ConsumeFromWhere;
 import com.alibaba.rocketmq.common.message.MessageExt;
 
-import clojure.main;
 import core.Tool.rocketEQ.POJO.RocketEQContentPOJO;
-import core.utils.JacksonUtil;
 import core.utils.RaceUtils;
 import data.common.factory.DataSourceContext;
-import data.externalRequest.pojo.ReceivePOJO;
-import data.lucene.entity.LuceneNode;
 import data.module.manager.DataBaseModuleManger;
 
 import java.util.List;
@@ -70,14 +66,15 @@ public class Consumer {
                     }
 
                     RocketEQContentPOJO rocketEQContent = RaceUtils.readKryoObject(RocketEQContentPOJO.class, body);
-                    //向Lucene服务 发送数据
+                    
                     try {
-            			DataSourceContext dataSourceContext=new DataSourceContext();
+                    	//向Lucene服务 发送数据
+                        DataSourceContext dataSourceContext=new DataSourceContext();
             			dataSourceContext.dataSource(rocketEQContent);
 					} catch (Exception e) {
-						//TODO 这里需要记录失败
 						System.out.println(e.getMessage());
-						//return ConsumeConcurrentlyStatus.RECONSUME_LATER;
+						//只有这里允许try——catch
+						return ConsumeConcurrentlyStatus.RECONSUME_LATER;
 					}
                 }
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;

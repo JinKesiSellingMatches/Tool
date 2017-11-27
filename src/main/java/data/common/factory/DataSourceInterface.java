@@ -14,6 +14,6 @@ public interface DataSourceInterface {
 	 * @return
 	 * @throws ToolException
 	 */
-	public ResultHelper dataSource(RocketEQContentPOJO pojo) throws ToolException;
+	public ResultHelper dataSource(RocketEQContentPOJO pojo) throws ToolException,Exception;
 
 }
