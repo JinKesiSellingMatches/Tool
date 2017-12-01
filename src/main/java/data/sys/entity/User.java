@@ -24,7 +24,7 @@ import data.common.entity.CommonEntity;
  * @date 2016年8月19日 上午10:06:16 @v1.0
  */
 @Entity
-@Table(name = "TB_SYS_USER")
+@Table(name = "TB_USER")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @JsonIgnoreProperties(value = { "createUser", "lastModifyUser" })
 public class User extends CommonEntity {

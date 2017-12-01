@@ -2,7 +2,7 @@ package data.rocketEQContent.manager;
 
 import java.util.List;
 
-import core.Tool.rocketEQ.POJO.RocketEQContentPOJO;
+import core.Tool.rocketEQ.RocketEQContentPOJO;
 import core.result.ResultHelper;
 import data.common.manager.BaseDao;
 import data.rocketEQContent.entity.RocketEQContent;

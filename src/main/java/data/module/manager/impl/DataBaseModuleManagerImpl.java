@@ -10,7 +10,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
-import core.Tool.rocketEQ.POJO.RocketEQContentPOJO;
+import core.Tool.rocketEQ.RocketEQContentPOJO;
 import core.exception.ErrorEnum;
 import core.result.ResultHelper;
 import data.common.manager.impl.BaseDaoImpl;

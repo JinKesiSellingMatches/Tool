@@ -17,6 +17,18 @@
 	</properties>
 
 	<dependencies>
+	
+	       <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.13</version>
+            </dependency>
+<!-- https://mvnrepository.com/artifact/com.esotericsoftware.kryo/kryo -->
+		<dependency>
+		    <groupId>com.esotericsoftware.kryo</groupId>
+		    <artifactId>kryo</artifactId>
+		    <version>2.16</version>
+		</dependency>
 	<!-- junit -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -107,19 +119,15 @@
 			<artifactId>ehcache</artifactId>
 			<version>2.9.0</version>
 		</dependency>
+
+    <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>1.2.17</version>
+    </dependency>
+        
+        
 		
-		<!-- log4j -->
-		<!-- <dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.17</version>
-		</dependency> -->
-		
-		<dependency>
-		    <groupId>org.slf4j</groupId>
-		    <artifactId>slf4j-log4j12</artifactId>
-		    <version>1.7.21</version>
-		</dependency>
 
 		<!-- mysql连接 -->
 		<dependency>
@@ -370,19 +378,6 @@
 			<version>2.4.2</version>
 		</dependency>
 		
-		<!-- aliyun js-sdk -->
-	<!-- 	<dependency>
-			<groupId>aliyun</groupId>
-			<artifactId>java-sdk-core</artifactId>
-			<version>3.2.3</version>
-		</dependency>
-
-		<dependency>
-			<groupId>aliyun</groupId>
-			<artifactId>java-sdk-dysmsapi</artifactId>
-			<version>1.0.0</version>
-		</dependency> -->
-		
 		<!--lucene  -->
 		<dependency>
 		    <groupId>org.apache.lucene</groupId>
@@ -422,44 +417,11 @@
 		
 		
 		<!--    com.alibaba.middleware.race.jstorm-2.1.1版本默认的日志框架是logback，为了避免日志冲突，排除掉log4j-->
-        <dependency>
-            <groupId>com.alibaba.rocketmq</groupId>
-            <artifactId>rocketmq-client</artifactId>
-            <version>3.2.6</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-jdk14</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.alibaba.jstorm</groupId>
-            <artifactId>jstorm-core</artifactId>
-            <version>2.1.1</version>
-            <!--            跑jstorm本地测试或者本地需要kryo相关操作时，请将provided屏蔽，
-                        提交到jstorm集群的时候，记得加上provided的-->
-            <!-- <scope>provided</scope>-->
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-nop</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-jdk14</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+       	  <dependency>
+               <groupId>org.apache.rocketmq</groupId>
+               <artifactId>rocketmq-client</artifactId>
+               <version>4.1.0-incubating</version>
+           </dependency>
 	</dependencies>
 
 	<build>
@@ -483,30 +445,6 @@
 					</compilerArgs>
 				</configuration>
 			</plugin>
-			
-			<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.5.3</version>
-                <configuration>
-                    <appendAssemblyId>false</appendAssemblyId>
-                    <descriptors>
-                        <descriptor>src/main/resources/conf/assembly.xml</descriptor>
-                    </descriptors>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 
 			<!-- Run the JUnit unit tests in an isolated classloader -->
 			<plugin>
@@ -533,7 +471,6 @@
 						</configuration>
 					</execution>
 				</executions>
-
 			</plugin>
 
 			<plugin>
@@ -554,22 +491,6 @@
 					</webResources>-->
 				</configuration>
 			</plugin>
-
-			<!-- 生成 java doc -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9.1</version>
-				<configuration>
-					<javadocDirectory>target/javadoc</javadocDirectory>
-					<reportOutputDirectory>target/javadoc</reportOutputDirectory>
-					<charset>UTF-8</charset>
-					<encoding>UTF-8</encoding>
-					<docencoding>UTF-8</docencoding>
-					<show>private</show>
-				</configuration>
-			</plugin>
-
 			<!-- 部署至本机 -->
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>

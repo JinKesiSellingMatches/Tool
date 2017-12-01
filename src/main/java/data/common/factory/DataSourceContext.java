@@ -4,7 +4,7 @@ import java.text.ParseException;
 
 import org.springframework.stereotype.Service;
 
-import core.Tool.rocketEQ.POJO.RocketEQContentPOJO;
+import core.Tool.rocketEQ.RocketEQContentPOJO;
 import core.exception.ToolException;
 import core.result.ResultHelper;
 

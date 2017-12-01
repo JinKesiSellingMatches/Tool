@@ -2,7 +2,7 @@ package data.common.factory.impl;
 
 import javax.annotation.Resource;
 
-import core.Tool.rocketEQ.POJO.RocketEQContentPOJO;
+import core.Tool.rocketEQ.RocketEQContentPOJO;
 import core.exception.ToolException;
 import core.result.ResultHelper;
 import data.common.factory.DataSourceInterface;

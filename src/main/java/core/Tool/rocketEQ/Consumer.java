@@ -1,14 +1,7 @@
 package core.Tool.rocketEQ;
 
-import com.alibaba.rocketmq.client.consumer.DefaultMQPushConsumer;
-import com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
-import com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
-import com.alibaba.rocketmq.client.consumer.listener.MessageListenerConcurrently;
-import com.alibaba.rocketmq.client.exception.MQClientException;
-import com.alibaba.rocketmq.common.consumer.ConsumeFromWhere;
-import com.alibaba.rocketmq.common.message.MessageExt;
 
-import core.Tool.rocketEQ.POJO.RocketEQContentPOJO;
+import core.Tool.rocketEQ.RocketEQContentPOJO;
 import core.utils.RaceUtils;
 import data.common.factory.DataSourceContext;
 import data.module.manager.DataBaseModuleManger;
@@ -18,6 +11,13 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
+import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
+import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
+import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
+import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
+import org.apache.rocketmq.common.message.MessageExt;
 import org.springframework.stereotype.Component;
 
 
@@ -53,7 +53,6 @@ public class Consumer {
 
         consumer.registerMessageListener(new MessageListenerConcurrently() {
 
-            @Override
             public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs,
                                                             ConsumeConcurrentlyContext context) {
                 for (MessageExt msg : msgs) {
@@ -64,19 +63,19 @@ public class Consumer {
                         System.err.println("Got the end signal");
                         continue;
                     }
-
-                    RocketEQContentPOJO rocketEQContent = RaceUtils.readKryoObject(RocketEQContentPOJO.class, body);
-                    
                     try {
+                    	RocketEQContentPOJO rocketEQContent = RaceUtils.readKryoObject(RocketEQContentPOJO.class, body);
                     	//向Lucene服务 发送数据
                         DataSourceContext dataSourceContext=new DataSourceContext();
             			dataSourceContext.dataSource(rocketEQContent);
 					} catch (Exception e) {
 						System.out.println(e.getMessage());
 						//只有这里允许try——catch
+						System.out.println("未成功消费");
 						return ConsumeConcurrentlyStatus.RECONSUME_LATER;
 					}
                 }
+                System.out.println("成功消费");
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             }
         });

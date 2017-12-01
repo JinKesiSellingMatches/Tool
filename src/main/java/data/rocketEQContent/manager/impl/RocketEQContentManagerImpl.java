@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import core.Tool.rocketEQ.POJO.RocketEQContentPOJO;
+import core.Tool.rocketEQ.RocketEQContentPOJO;
 import core.result.ResultHelper;
 import data.common.manager.impl.BaseDaoImpl;
 import data.rocketEQContent.entity.RocketEQContent;

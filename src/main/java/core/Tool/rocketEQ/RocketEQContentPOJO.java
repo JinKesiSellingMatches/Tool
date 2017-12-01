@@ -1,5 +1,6 @@
-package core.Tool.rocketEQ.POJO;
+package core.Tool.rocketEQ;
 
+import java.io.Serializable;
 
 /**
  * 消息队列发送/接收消息标准格式
@@ -8,8 +9,10 @@ package core.Tool.rocketEQ.POJO;
  * @author hutao
  *
  */
-public class RocketEQContentPOJO {
+public class RocketEQContentPOJO implements Serializable{
 	
+	private static final long serialVersionUID = -1037964011498646148L;
+
 	/**
 	 * 目标ID
 	 */

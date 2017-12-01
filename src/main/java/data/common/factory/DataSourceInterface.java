@@ -1,7 +1,7 @@
 package data.common.factory;
 
 
-import core.Tool.rocketEQ.POJO.RocketEQContentPOJO;
+import core.Tool.rocketEQ.RocketEQContentPOJO;
 import core.exception.ToolException;
 import core.result.ResultHelper;
 
